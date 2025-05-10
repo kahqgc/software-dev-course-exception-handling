@@ -33,7 +33,7 @@ const readlineSync = require('readline-sync');
 let animals = [];
 let fees = [];
 function addAnimal(name, fee) {
-    if (!name || fee < 0) {
+    if (!name || fee <= 0 || isNaN(fee)) {
         throw new Error("Invalid animal name or adoption fee!");
     }
     animals.push(name);
@@ -57,11 +57,22 @@ while (true) {
     if (action === "add") {
         let animal = readlineSync.question("Enter the animal's name: ");
         let fee = Number(readlineSync.question("Enter the adoption fee: "));
-        addAnimal(animal, fee);
-        console.log(`${animal} added with a fee of $${fee}.`);
+        try { addAnimal(animal, fee);
+            console.log(`${animal} added with a fee of $${fee}.`);
+         } 
+        catch (err) {
+            console.log(err.message);
+            console.log("Please try again.");
+           }
     } else if (action === "fee") {
+        try {
         let animal = readlineSync.question("Enter the animal's name to find its adoption fee: ");
         console.log(`${animal}'s adoption fee is $${getAdoptionFee(animal)}.`);
+        }
+        catch (err) {
+            console.log(err.message);
+            console.log("Please try again.");
+        }
     } else {
         console.log("Invalid action. Please choose 'add', 'fee', or 'exit'.");
     }
@@ -74,10 +85,14 @@ Problems to Solve
 
 Invalid Input Errors:
   What happens if the user provides a negative adoption fee or leaves the name blank?
+  I added !name || fee <= 0 || isNaN(fee) to the if block of addAnimal to cover if the input is 0 or NaN.
   What happens if the user tries to find the fee for an animal that hasn’t been added?
 
 Code Flow Problems:
   What happens if the program throws an exception? Does the rest of the code continue running?
+  When you add try/catch blocks, the code should continue running even if an error occurs. 
+  It will run the message made in throw new Error due to using err.message in the catch block
+  Without try/catch, the program will crash and stop running when the program throws and exception.
 
 Structured Exception Handling:
   Add try/catch blocks to handle the above errors gracefully.
